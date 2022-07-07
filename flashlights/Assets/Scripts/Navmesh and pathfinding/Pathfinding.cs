@@ -8,6 +8,7 @@ public class Pathfinding : MonoBehaviour
     Grid GridReference;//For referencing the grid class
     public Transform StartPosition;//Starting position to pathfind from
     public Transform TargetPosition;//Starting position to pathfind to
+    public Node TN;
 
     private void Awake()//When the program starts
     {
@@ -23,6 +24,7 @@ public class Pathfinding : MonoBehaviour
     {
         Node StartNode = GridReference.NodeFromWorldPoint(a_StartPos);//Gets the node closest to the starting position
         Node TargetNode = GridReference.NodeFromWorldPoint(a_TargetPos);//Gets the node closest to the target position
+        TN = TargetNode;
 
         List<Node> OpenList = new List<Node>();//List of nodes for the open list
         HashSet<Node> ClosedList = new HashSet<Node>();//Hashset of nodes for the closed list

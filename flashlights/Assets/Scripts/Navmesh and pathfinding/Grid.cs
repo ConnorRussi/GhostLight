@@ -104,7 +104,7 @@ public class Grid : MonoBehaviour
     public Node NodeFromWorldPoint(Vector3 a_vWorldPos)
     {
         float ixPos = ((a_vWorldPos.x + gridWorldSize.x / 2) / gridWorldSize.x);
-        float iyPos = ((a_vWorldPos.z + gridWorldSize.y / 2) / gridWorldSize.y);
+        float iyPos = ((a_vWorldPos.y + gridWorldSize.y / 2) / gridWorldSize.y);
 
         ixPos = Mathf.Clamp01(ixPos);
         iyPos = Mathf.Clamp01(iyPos);
@@ -147,8 +147,16 @@ public class Grid : MonoBehaviour
 
                 if (finalPath != null)
                 {
-                    Gizmos.color = Color.red;
+                    if (finalPath.Contains(node))//If the current node is in the final path
+                    {
+                        Gizmos.color = Color.red;//Set the color of that node
+                    }
                 }
+                if(node == GetComponent<Pathfinding>().TN)
+                {
+                    Gizmos.color = Color.green;
+                }
+               
                 Gizmos.DrawCube(node.position, Vector2.one * (nodeDiameter - fDistanceBetweenNodes));
             }
             
