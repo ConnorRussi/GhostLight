@@ -33,7 +33,9 @@ public class Grid : MonoBehaviour
                 Vector2 spawnPoint;
                 float xSpawn = bottomLeftPossition.x + distanceBetweenPatrolPoints * i;
                 spawnPoint = new Vector2(xSpawn, ySpawn);
-                Instantiate(patrolPointPrefab, new Vector3(xSpawn, ySpawn, 0f), Quaternion.identity);
+                GameObject recentPoint = Instantiate(patrolPointPrefab, new Vector3(xSpawn, ySpawn, 0f), Quaternion.identity);
+                recentPoint.name = "Patrol Point(Clone) " + numberOfPatrolPoints;
+                numberOfPatrolPoints++;
             }
             
         }

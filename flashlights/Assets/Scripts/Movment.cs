@@ -7,13 +7,30 @@ public class Movment : MonoBehaviour
     public float speed;
     public float xInput;
     public float yInput;
-   
+    private GameObject ghost;
+    private GhostAI ghostAi;
+    private Pathfinder pathfinder;
+    private Pathfinding2 pathfinding2;
 
+    public void Awake()
+    {
+        ghost = GameObject.Find("Ghost");
+        ghostAi = ghost.GetComponent<GhostAI>();
+        pathfinder = ghost.GetComponent<Pathfinder>();
+        pathfinding2 = ghost.GetComponent<Pathfinding2>();
+
+    }
 
     private void Update()
     {
         CollectInputs();
         applyInput();
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            pathfinding2.Path(ghostAi.FindStartPoint(), ghostAi.FindTargetPoint());
+            
+            
+        }
     }
     private void CollectInputs()
     {
