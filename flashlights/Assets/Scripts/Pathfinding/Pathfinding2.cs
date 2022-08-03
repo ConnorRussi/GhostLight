@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Pathfinding2 : MonoBehaviour
 {
-    public void Path(GameObject startNode, GameObject targetNode)
+    public List<GameObject> Path(GameObject startNode, GameObject targetNode)
     {
         var toSearch = new List<GameObject>() { startNode };
         var processed = new List<GameObject>();
@@ -39,12 +39,17 @@ public class Pathfinding2 : MonoBehaviour
                     count--;
                     Debug.Log("sdfsdf");
                 }
+                
+                
                 for (int i = 0; i < path.Count; i++)
                 {
                     path[i].GetComponent<PatrolPoint>().changeColor();
 
                     Debug.Log(path[i].name);
                 }
+
+                path.Insert(0, GameObject.Find("Player"));
+                return path;
             }
             foreach (GameObject neighbor in current.GetComponent<PatrolPoint>().neighbors)
             {
@@ -69,8 +74,8 @@ public class Pathfinding2 : MonoBehaviour
             }
             
         }
-
-
+        Debug.Log("Could not find path");
+        return null;
     }
         
 }
