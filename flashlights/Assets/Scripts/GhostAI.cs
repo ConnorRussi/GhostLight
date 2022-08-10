@@ -7,7 +7,7 @@ public class GhostAI : MonoBehaviour
     private GameObject player;
     private GameObject gameManager;
     public GameObject target;
-    private GameObject lastPatrolPoint;
+    public GameObject lastPatrolPoint;
     public PatrolPointManager patrolPointManager;
     private Transform playerLastPosition;
     public int RaysForGhostToShoot;
@@ -40,6 +40,9 @@ public class GhostAI : MonoBehaviour
     public GameObject currentRoom;
     public bool roomSet;
     public float minDistanceToRoom;
+
+    //Checking the last seen spot of the player
+    public GameObject lastSeenPatrolPoint;
 
     private void Start()
     {
@@ -80,6 +83,13 @@ public class GhostAI : MonoBehaviour
         {
             seePlayer = true;
             // aiPath.maxSpeed = 5 + (timeLookingAtPlayer / 10);
+        }
+        else if (seePlayer)
+        {
+            seePlayer = false;
+            target = FindTargetPoint(player);
+            lastSeenPatrolPoint = target;
+            patrolPointSet = true;
         }
         else seePlayer = false;
     }
@@ -185,7 +195,7 @@ public class GhostAI : MonoBehaviour
     }
     public GameObject FindTargetPoint(GameObject target)
     {
-        var startPoints = Physics2D.OverlapCircleAll(new Vector2(target.transform.position.x, target.transform.position.y), 5, patrolPoints);
+        var startPoints = Physics2D.OverlapCircleAll(new Vector2(target.transform.position.x, target.transform.position.y), 3, patrolPoints);
         GameObject targetPoint = startPoints[0].gameObject;
         foreach (Collider2D point in startPoints)
         {
