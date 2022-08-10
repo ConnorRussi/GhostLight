@@ -26,6 +26,7 @@ public class Pathfinding2 : MonoBehaviour
                 }
             }
             processed.Add(current);
+           // current.gameObject.GetComponent<SpriteRenderer>().color = Color.black;
             toSearch.Remove(current);
             if (current == targetNode)
             {
@@ -37,18 +38,18 @@ public class Pathfinding2 : MonoBehaviour
                     path.Add(currentPathTile);
                     currentPathTile = currentPathTile.GetComponent<PatrolPoint>().Connection;
                     count--;
-                    Debug.Log("sdfsdf");
+                   // Debug.Log("sdfsdf");
                 }
                 
                 
-                for (int i = 0; i < path.Count; i++)
-                {
-                    path[i].GetComponent<PatrolPoint>().changeColor();
+                //for (int i = 0; i < path.Count; i++)
+                //{
+                //    path[i].GetComponent<PatrolPoint>().changeColor();
 
-                    Debug.Log(path[i].name);
-                }
+                //    Debug.Log(path[i].name);
+                //}
 
-                path.Insert(0, GameObject.Find("Player"));
+               // path.Insert(0, GameObject.Find("Player"));
                 return path;
             }
             foreach (GameObject neighbor in current.GetComponent<PatrolPoint>().neighbors)

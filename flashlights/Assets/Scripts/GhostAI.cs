@@ -11,7 +11,7 @@ public class GhostAI : MonoBehaviour
     public PatrolPointManager patrolPointManager;
     private Transform playerLastPosition;
     public int RaysForGhostToShoot;
-    private bool seePlayer;
+    public bool seePlayer;
     public bool patrolPointSet;
     public bool pathSet;
     public int distanceToTeleportToPlayer;
@@ -24,6 +24,22 @@ public class GhostAI : MonoBehaviour
     public float ghostSpeed;
     public List<GameObject> path;
 
+    //Checking for player in view
+    public float rangeOfView;
+    public LayerMask obstacles;
+    public LayerMask playerLayer;
+    public GameObject hit;
+
+
+    //Facing the ghost to player;
+    public float rotationModifier;
+    public float rotationSpeed;
+
+    //Choosing a random room
+    public List<GameObject> rooms;
+    public GameObject currentRoom;
+    public bool roomSet;
+    public float minDistanceToRoom;
 
     private void Start()
     {
@@ -35,26 +51,69 @@ public class GhostAI : MonoBehaviour
         timeLookingAtPlayer = 0;
         //aiPath = gameObject.GetComponent<AIPath>();
        // target = GameObject.Find("Target");
+       foreach(GameObject room in GameObject.FindGameObjectsWithTag("Room"))
+        {
+            rooms.Add(room);
+        }
+        target = FindStartPoint();
     }
     private void Update()
     {
         CheckForPlayer();
         chooseAiState();
         MoveGhost();
+       // RotateGhost();
+    }
+    public void RotateGhost()
+    {
+        if (player != null)
+        {
+            Vector3 vectorToTarget = player.transform.position - transform.position;
+            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg - rotationModifier;
+            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+            transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * rotationSpeed);
+        }
     }
     public void CheckForPlayer()
     {
         if (shootRays())
         {
             seePlayer = true;
-           // aiPath.maxSpeed = 5 + (timeLookingAtPlayer / 10);
+            // aiPath.maxSpeed = 5 + (timeLookingAtPlayer / 10);
         }
+        else seePlayer = false;
     }
     
     //Checks for player
     public bool shootRays()
     {
+        RaycastHit2D hit = Physics2D.Linecast(gameObject.transform.position, player.transform.position, obstacles) ;
+        if (hit.collider == null || hit.collider.gameObject == null) 
+        {
+            return true;
+            //RaycastHit2D toPlayer = Physics2D.Linecast(gameObject.transform.position, player.transform.position);
+            //if(toPlayer.rigidbody != null && toPlayer.collider.gameObject != null)
+            //{
+            //    if (toPlayer.collider.gameObject.CompareTag("Player"))
+            //    {
+                   
+            //    }
+            //}
+          
+        }
         return false;
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.white;
+        RaycastHit2D hit = Physics2D.Linecast(gameObject.transform.position, player.transform.position, obstacles);
+        //Gizmos.DrawLine(transform.position, player.transform.position);
+        Gizmos.DrawLine(gameObject.transform.position, hit.collider.gameObject.transform.position);
+
+        Gizmos.color = Color.blue;
+
+        RaycastHit2D toPlayer = Physics2D.Linecast(gameObject.transform.position, player.transform.position, playerLayer);
+        Gizmos.DrawLine(gameObject.transform.position, toPlayer.collider.gameObject.transform.position);
     }
     public void chooseAiState()
     {
@@ -75,29 +134,45 @@ public class GhostAI : MonoBehaviour
     }
     public void chasePlayer()
     {
-        target.transform.position = player.transform.position;
-        //destinationSC.target = target.transform;
+        target = player;
+       
     }
     public void Patrol()
     {
-        if (!patrolPointSet)
+        if (!roomSet)
         {
-            target = choosePatrolPoint();
-           
+            currentRoom = chooseRoomToWanderTo();
+            roomSet = true;
         }
-        else if (patrolPointSet)
+        else if(roomSet)
         {
-            if (minDistanceToPatrolPoint >= Vector2.Distance(gameObject.transform.position, target.transform.position))
+            if (minDistanceToRoom >= Vector2.Distance(gameObject.transform.position, currentRoom.transform.position))
             {
-                patrolPointSet = false;
+                roomSet = false;
             }
+            else
+            {
+                if (!patrolPointSet || target == player)
+                {
+                    target = choosePatrolPoint();
+
+                }
+                else if (patrolPointSet)
+                {
+                    if (minDistanceToPatrolPoint >= Vector2.Distance(gameObject.transform.position, target.transform.position))
+                    {
+                        patrolPointSet = false;
+                    }
+                }
+            }
+            
         }
 
     }
     public GameObject choosePatrolPoint()
     {
         patrolPointSet = true;
-        path = pathfinding.Path(FindStartPoint(), FindTargetPoint());
+        path = pathfinding.Path(FindStartPoint(), FindTargetPoint(currentRoom));
         GameObject newPoint = path[path.Count - 1];
         if(newPoint == lastPatrolPoint || lastPatrolPoint == null)
         {
@@ -108,15 +183,17 @@ public class GhostAI : MonoBehaviour
 
         return lastPatrolPoint;
     }
-    public GameObject FindTargetPoint()
+    public GameObject FindTargetPoint(GameObject target)
     {
-        var startPoints = Physics2D.OverlapCircleAll(new Vector2(player.transform.position.x, player.transform.position.y), 5, patrolPoints);
+        var startPoints = Physics2D.OverlapCircleAll(new Vector2(target.transform.position.x, target.transform.position.y), 5, patrolPoints);
         GameObject targetPoint = startPoints[0].gameObject;
         foreach (Collider2D point in startPoints)
         {
             if (point.gameObject.layer == patrolPoints && targetPoint.gameObject.GetComponent<PatrolPoint>().GetDistance(player) > point.gameObject.GetComponent<PatrolPoint>().GetDistance(player))
             {
                 targetPoint = point.gameObject;
+                
+
             }
         }
         Debug.Log("target point = " + targetPoint.name);
@@ -125,13 +202,14 @@ public class GhostAI : MonoBehaviour
     }
     public GameObject FindStartPoint()
     {
-        var targetPoints = Physics2D.OverlapCircleAll(new Vector2(gameObject.transform.position.x, gameObject.transform.position.y), 5, patrolPoints);
+        var targetPoints = Physics2D.OverlapCircleAll(new Vector2(gameObject.transform.position.x, gameObject.transform.position.y), 1, patrolPoints);
         GameObject targetPoint = targetPoints[0].gameObject;
         foreach(Collider2D point in targetPoints)
         {
             if(point.gameObject.layer == patrolPoints && targetPoint.gameObject.GetComponent<PatrolPoint>().GetDistance(player) > point.gameObject.GetComponent<PatrolPoint>().GetDistance(player))
             {
                 targetPoint = point.gameObject;
+                Debug.Log(targetPoint.name);
             }
         }
         Debug.Log("Start point = " + targetPoint.name);
@@ -142,8 +220,16 @@ public class GhostAI : MonoBehaviour
         gameObject.transform.position = Vector2.MoveTowards(transform.position, target.transform.position, ghostSpeed * Time.deltaTime) ;
     }
 
-
-
-
-
+   public int DistanceToPlayer()
+    {
+        
+            return Mathf.RoundToInt(Mathf.Abs((player.transform.position.x - gameObject.transform.position.x) + (player.transform.position.y - gameObject.transform.position.y)));
+        
+    }
+    public GameObject chooseRoomToWanderTo()
+    {
+        return rooms[Random.Range(0, rooms.Count - 1)];
+       
+       
+    }
 }

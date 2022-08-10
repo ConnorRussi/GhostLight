@@ -19,18 +19,18 @@ public class StairScript : MonoBehaviour
         if (collision.collider.gameObject == player)
         {
             player.transform.position = placeToTeleport.position;
-            Debug.Log("Player Teleported to " + placeToTeleport);
+          //  Debug.Log("Player Teleported to " + placeToTeleport);
         }
         else if (collision.collider.gameObject == ghost)
         {
 
             ghost.transform.position = placeToTeleport.position;
-            Debug.Log("Ghost Teleported to " + placeToTeleport);
+            //Debug.Log("Ghost Teleported to " + placeToTeleport);
 
         }
         else
         {
-            Debug.Log(collision.collider.gameObject.name + "Was not Teleported");
+           // Debug.Log(collision.collider.gameObject.name + "Was not Teleported");
             return;
         }
     }
