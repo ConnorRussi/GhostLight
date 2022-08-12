@@ -53,11 +53,8 @@ public class GhostAI : MonoBehaviour
        // destinationSC = gameObject.GetComponent<AIDestinationSetter>();
         timeLookingAtPlayer = 0;
         //aiPath = gameObject.GetComponent<AIPath>();
-       // target = GameObject.Find("Target");
-       foreach(GameObject room in GameObject.FindGameObjectsWithTag("Room"))
-        {
-            rooms.Add(room);
-        }
+        // target = GameObject.Find("Target");
+        rooms = gameManager.GetComponent<GameManager>().rooms;
         target = FindStartPoint();
     }
     private void Update()
@@ -206,7 +203,7 @@ public class GhostAI : MonoBehaviour
 
             }
         }
-        Debug.Log("target point = " + targetPoint.name);
+       // Debug.Log("target point = " + targetPoint.name);
 
         return targetPoint.gameObject;
     }
@@ -222,7 +219,7 @@ public class GhostAI : MonoBehaviour
                 Debug.Log(targetPoint.name);
             }
         }
-        Debug.Log("Start point = " + targetPoint.name);
+       // Debug.Log("Start point = " + targetPoint.name);
         return targetPoint.gameObject;
     }
     public void MoveGhost()

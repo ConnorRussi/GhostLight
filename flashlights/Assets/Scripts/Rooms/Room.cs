@@ -6,6 +6,8 @@ public class Room : MonoBehaviour
 {
     public bool ghostInRoom;
     public bool playerInRoom;
+    public bool trapPartInRoom;
+    public bool canHavePart;
     public GameObject player;
     public GameObject ghost;
 
@@ -20,12 +22,12 @@ public class Room : MonoBehaviour
         if(collision.gameObject == player)
         {
             playerInRoom = true;
-            Debug.Log("Player has entered " + gameObject.name);
+            //Debug.Log("Player has entered " + gameObject.name);
         }
         else if(collision.gameObject == ghost)
         {
             ghostInRoom = true;
-            Debug.Log("Ghost has entered " + gameObject.name);
+            //Debug.Log("Ghost has entered " + gameObject.name);
         }
     }
 }

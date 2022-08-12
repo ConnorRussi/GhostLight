@@ -59,3 +59,6 @@ TagManager:
   - name: patrol Points
     uniqueID: 2697901497
     locked: 0
+  - name: TrapParts
+    uniqueID: 878869561
+    locked: 0
