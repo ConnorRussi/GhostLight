@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject player;
+    //trap variables
     public int numberOfTrapPartsCollected;
     public bool trapReady;
+    public bool trapPlaced;
+    public bool ghostCollected;
+    public GameObject trapPrefab;
+    public GameObject trap;
+    public Trap trapSC;
+
+    //Trap parts
     public GameObject trapPartPrefab;
     public int numberOfTrapParts;
     public List<GameObject> roomsWithParts;
     public List<GameObject> rooms;
+    
 
 
     private void Awake()
     {
+        player = GameObject.Find("Player");
         foreach (GameObject room in GameObject.FindGameObjectsWithTag("Room"))
         {
             rooms.Add(room);
@@ -39,4 +50,13 @@ public class GameManager : MonoBehaviour
            
         }
     }
+
+    public void PlaceTrap()
+    {
+        trapReady = false;
+        trap = Instantiate(trapPrefab, player.transform.position, Quaternion.identity);
+        trapSC = trap.GetComponent<Trap>();
+        trapPlaced = true;
+    }
+    
 }

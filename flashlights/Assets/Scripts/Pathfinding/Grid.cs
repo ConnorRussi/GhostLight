@@ -35,6 +35,7 @@ public class Grid : MonoBehaviour
                 spawnPoint = new Vector2(xSpawn, ySpawn);
                 GameObject recentPoint = Instantiate(patrolPointPrefab, new Vector3(xSpawn, ySpawn, 0f), Quaternion.identity);
                 recentPoint.name = "Patrol Point(Clone) " + numberOfPatrolPoints;
+                recentPoint.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
                 numberOfPatrolPoints++;
             }
             

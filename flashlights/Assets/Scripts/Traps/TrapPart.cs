@@ -20,6 +20,10 @@ public class TrapPart : MonoBehaviour
         {
             gameManager.numberOfTrapPartsCollected++;
             partCollected = true;
+            if(gameManager.numberOfTrapPartsCollected == gameManager.numberOfTrapParts)
+            {
+                gameManager.trapReady = true;
+            }
             gameObject.SetActive(false);
         }
     }
