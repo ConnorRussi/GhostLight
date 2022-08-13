@@ -17,7 +17,7 @@ public class Trap : MonoBehaviour
     public float maxPickUpDistance;
 
     //defing variables
-    public void Awake()
+    public void Start()
     {
         ghost = GameObject.Find("Ghost");
         player = GameObject.Find("Player");
@@ -70,16 +70,18 @@ public class Trap : MonoBehaviour
         {
             trapOpenDuration = 0;
             trapOpen = true;
+            spriteRender.sprite = openTrap;
         }
         return;
     }
 
     public void CloseTrap()
     {
-        if (trapOpen)
-        {
+        
+        
             trapOpen = false;
-        }
+            spriteRender.sprite = closedTrap;
+        
         return;
     }
 }

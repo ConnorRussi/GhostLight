@@ -106,7 +106,7 @@ MonoBehaviour:
   closedTrap: {fileID: 21300000, guid: 16b6047f6860b9f4d98670244876c639, type: 3}
   spriteRender: {fileID: 0}
   trapOpenDuration: 0
-  maxTrapOpenTime: 5
+  maxTrapOpenTime: 3
   maxPickUpDistance: 20
 --- !u!58 &8684744695060182312
 CircleCollider2D:
