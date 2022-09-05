@@ -44,6 +44,12 @@ public class GhostAI : MonoBehaviour
     //Checking the last seen spot of the player
     public GameObject lastSeenPatrolPoint;
 
+    //Audio
+    public AudioClip[] ghostWanderSounds;
+    public AudioClip currentClip;
+    public AudioSource audioSource;
+    public float normalSoundDistance;
+
     private void Start()
     {
         player = GameObject.Find("Player");
@@ -56,13 +62,18 @@ public class GhostAI : MonoBehaviour
         // target = GameObject.Find("Target");
         rooms = gameManager.GetComponent<GameManager>().rooms;
         target = FindStartPoint();
+        currentClip = ghostWanderSounds[0];
+        audioSource = gameObject.GetComponent<AudioSource>();
+        normalSoundDistance = audioSource.maxDistance;
     }
     private void Update()
     {
         CheckForPlayer();
         chooseAiState();
         MoveGhost();
-       // RotateGhost();
+        // RotateGhost();
+        ghostSpeed = 8 + (timeLookingAtPlayer / 5);
+        Audio();
     }
     public void RotateGhost()
     {
@@ -79,7 +90,7 @@ public class GhostAI : MonoBehaviour
         if (shootRays())
         {
             seePlayer = true;
-            // aiPath.maxSpeed = 5 + (timeLookingAtPlayer / 10);
+            
         }
         else if (seePlayer)
         {
@@ -88,7 +99,13 @@ public class GhostAI : MonoBehaviour
             lastSeenPatrolPoint = target;
             patrolPointSet = true;
         }
-        else seePlayer = false;
+        else
+        {
+            seePlayer = false;
+
+            
+            
+        }
     }
     
     //Checks for player
@@ -112,15 +129,15 @@ public class GhostAI : MonoBehaviour
     }
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.white;
-        RaycastHit2D hit = Physics2D.Linecast(gameObject.transform.position, player.transform.position, obstacles);
-        //Gizmos.DrawLine(transform.position, player.transform.position);
-        Gizmos.DrawLine(gameObject.transform.position, hit.collider.gameObject.transform.position);
+        //Gizmos.color = Color.white;
+        //RaycastHit2D hit = Physics2D.Linecast(gameObject.transform.position, player.transform.position, obstacles);
+        ////Gizmos.DrawLine(transform.position, player.transform.position);
+        //Gizmos.DrawLine(gameObject.transform.position, hit.collider.gameObject.transform.position);
 
-        Gizmos.color = Color.blue;
+        //Gizmos.color = Color.blue;
 
-        RaycastHit2D toPlayer = Physics2D.Linecast(gameObject.transform.position, player.transform.position, playerLayer);
-        Gizmos.DrawLine(gameObject.transform.position, toPlayer.collider.gameObject.transform.position);
+        //RaycastHit2D toPlayer = Physics2D.Linecast(gameObject.transform.position, player.transform.position, playerLayer);
+        //Gizmos.DrawLine(gameObject.transform.position, toPlayer.collider.gameObject.transform.position);
     }
     public void chooseAiState()
     {
@@ -238,5 +255,33 @@ public class GhostAI : MonoBehaviour
         return rooms[Random.Range(0, rooms.Count - 1)];
        
        
+    }
+    public void Audio()
+    {
+        if (!audioSource.isPlaying)
+        {
+            AudioClip newClip = chooseAudio();
+            if (currentClip != newClip)
+            {
+                
+                audioSource.PlayOneShot(newClip);
+            }
+          
+        }
+    }
+    public AudioClip chooseAudio()
+    {
+        if (seePlayer)
+        {
+            //play sound to say see player
+            audioSource.maxDistance = DistanceToPlayer() + 20;
+            return ghostWanderSounds[Random.Range(0, ghostWanderSounds.Length - 1)];
+        }
+        else
+        {
+            audioSource.maxDistance = normalSoundDistance;
+
+            return ghostWanderSounds[Random.Range(0, ghostWanderSounds.Length - 1)];
+        }
     }
 }
