@@ -11,6 +11,7 @@ public class Movment : MonoBehaviour
     public KeyCode pickUpKey;
     public bool placeKeyPressed;
     public bool pickUpKeyPressed;
+    public bool isWalking;
     private GameObject ghost;
     private GhostAI ghostAi;
     private Pathfinding2 pathfinding2;
@@ -18,20 +19,27 @@ public class Movment : MonoBehaviour
     public Trap trapSC;
     public GameObject trap;
 
+    //Audio
+    public AudioSource audioSource;
+    public AudioClip[] footSteps;
+    public AudioClip currentFootStep;
     public void Awake()
     {
         ghost = GameObject.Find("Ghost");
         ghostAi = ghost.GetComponent<GhostAI>();
         pathfinding2 = ghost.GetComponent<Pathfinding2>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-
+        audioSource = gameObject.GetComponent<AudioSource>();
+        currentFootStep = footSteps[0];
     }
 
     private void Update()
     {
         CollectInputs();
         applyInput();
-       
+        if(isWalking) FootSteps();
+
+
     }
     private void CollectInputs()
     {
@@ -49,6 +57,11 @@ public class Movment : MonoBehaviour
     {
         gameObject.transform.Translate(Vector2.left * -xInput * speed * Time.deltaTime, Space.World);
         gameObject.transform.Translate(Vector2.down * -yInput * speed * Time.deltaTime, Space.World);
+        if (xInput != 0 || yInput != 0)
+        {
+            isWalking = true;
+        }
+        else isWalking = false;
         if(placeKeyPressed && gameManager.trapReady)
         {
             gameManager.PlaceTrap();
@@ -66,6 +79,16 @@ public class Movment : MonoBehaviour
             
         }
     }
-
-
+    private void FootSteps()
+    {
+        if (!audioSource.isPlaying)
+        {
+            currentFootStep = ChooseFootStep();
+            audioSource.PlayOneShot(currentFootStep);
+        }
+    }
+    private AudioClip ChooseFootStep()
+    {
+        return footSteps[Random.Range(0, footSteps.Length)];
+    }
 }

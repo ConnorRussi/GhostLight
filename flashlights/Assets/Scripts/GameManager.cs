@@ -29,7 +29,12 @@ public class GameManager : MonoBehaviour
         {
             rooms.Add(room);
         }
-        SpawnTrapParts();
+       
+    }
+    private void Start()
+    {
+        Invoke("SpawnTrapParts", 1.0f);
+        
     }
     public void SpawnTrapParts()
     {
@@ -43,7 +48,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 trapSpawn.GetComponent<Room>().trapPartInRoom = true;
-               GameObject newPart =  Instantiate(trapPartPrefab, trapSpawn.transform.position, Quaternion.identity);
+               GameObject newPart =  Instantiate(trapPartPrefab, choosePointInRoom(trapSpawn).transform.position, Quaternion.identity);
                 newPart.transform.position = new Vector3(newPart.transform.position.x, newPart.transform.position.y, 50);
                 roomsWithParts.Add(trapSpawn);
             }
@@ -58,5 +63,9 @@ public class GameManager : MonoBehaviour
         trapSC = trap.GetComponent<Trap>();
         trapPlaced = true;
     }
-    
+    public GameObject choosePointInRoom(GameObject room)
+    {
+        Room roomSC = room.GetComponent<Room>();
+        return roomSC.points[Random.Range(0, roomSC.points.Count)];
+    }
 }

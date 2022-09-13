@@ -16,7 +16,7 @@ public class Grid : MonoBehaviour
     public bool pointsVisible;
 
 
-    public void Start()
+    public void Awake()
     {
         bottomLeftPossition = new Vector2(gameObject.transform.position.x, gameObject.transform.position.y);
         SpawnGrid();

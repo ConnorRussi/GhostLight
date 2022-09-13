@@ -38,6 +38,7 @@ public class GhostAI : MonoBehaviour
     //Choosing a random room
     public List<GameObject> rooms;
     public GameObject currentRoom;
+    public GameObject pointInRoom;
     public bool roomSet;
     public float minDistanceToRoom;
 
@@ -166,6 +167,7 @@ public class GhostAI : MonoBehaviour
         if (!roomSet)
         {
             currentRoom = chooseRoomToWanderTo();
+            pointInRoom = choosePointInRoom(currentRoom);
             roomSet = true;
         }
         else if(roomSet)
@@ -196,16 +198,26 @@ public class GhostAI : MonoBehaviour
     public GameObject choosePatrolPoint()
     {
         patrolPointSet = true;
-        path = pathfinding.Path(FindStartPoint(), FindTargetPoint(currentRoom));
-        GameObject newPoint = path[path.Count - 1];
-        if(newPoint == lastPatrolPoint || lastPatrolPoint == null)
-        {
-            newPoint = path[path.Count - 2];
-            lastPatrolPoint = newPoint;
+        path = pathfinding.Path(FindStartPoint(), FindTargetPoint(pointInRoom));
+        if(path.Count <= 0){
+            roomSet = false;
+            patrolPointSet = false;
+            return null;
         }
-        else lastPatrolPoint = newPoint;
+        else
+        {
+            GameObject newPoint = path[path.Count - 1];
+            if (newPoint == lastPatrolPoint || lastPatrolPoint == null)
+            {
+                newPoint = path[path.Count - 2];
+                lastPatrolPoint = newPoint;
+            }
+            else lastPatrolPoint = newPoint;
+            return lastPatrolPoint;
+        }
+       
 
-        return lastPatrolPoint;
+        
     }
     public GameObject FindTargetPoint(GameObject target)
     {
@@ -261,11 +273,8 @@ public class GhostAI : MonoBehaviour
         if (!audioSource.isPlaying)
         {
             AudioClip newClip = chooseAudio();
-            if (currentClip != newClip)
-            {
-                
-                audioSource.PlayOneShot(newClip);
-            }
+            audioSource.PlayOneShot(newClip);
+            
           
         }
     }
@@ -275,13 +284,18 @@ public class GhostAI : MonoBehaviour
         {
             //play sound to say see player
             audioSource.maxDistance = DistanceToPlayer() + 20;
-            return ghostWanderSounds[Random.Range(0, ghostWanderSounds.Length - 1)];
+            return ghostWanderSounds[Random.Range(0, ghostWanderSounds.Length)];
         }
         else
         {
             audioSource.maxDistance = normalSoundDistance;
 
-            return ghostWanderSounds[Random.Range(0, ghostWanderSounds.Length - 1)];
+            return ghostWanderSounds[Random.Range(0, ghostWanderSounds.Length )];
         }
+    }
+    public GameObject choosePointInRoom(GameObject room)
+    {
+        Room roomSC = room.GetComponent<Room>();
+        return roomSC.points[Random.Range(0, roomSC.points.Count)];
     }
 }
