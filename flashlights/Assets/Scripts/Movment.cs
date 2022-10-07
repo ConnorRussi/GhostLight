@@ -23,6 +23,9 @@ public class Movment : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip[] footSteps;
     public AudioClip currentFootStep;
+
+    //FOV
+    public FieldOfViewScript fovSC;
     public void Awake()
     {
         ghost = GameObject.Find("Ghost");
@@ -31,6 +34,7 @@ public class Movment : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         audioSource = gameObject.GetComponent<AudioSource>();
         currentFootStep = footSteps[0];
+        fovSC = GameObject.Find("Feild of view").GetComponent<FieldOfViewScript>();
     }
 
     private void Update()
@@ -39,8 +43,9 @@ public class Movment : MonoBehaviour
         applyInput();
         if(isWalking) FootSteps();
 
-
+        
     }
+   
     private void CollectInputs()
     {
         xInput = Input.GetAxis("Horizontal");
@@ -49,6 +54,9 @@ public class Movment : MonoBehaviour
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
         Vector2 direction = new Vector2(mousePosition.x - transform.position.x, mousePosition.y - transform.position.y);
         transform.up = direction;
+        Vector3 airmDir = (mousePosition - gameObject.transform.position).normalized;
+        fovSC.SetAimDirection(mousePosition);
+        fovSC.SetOrgin(transform.position);
         placeKeyPressed = Input.GetKeyDown(trapPlaceKey);
         pickUpKeyPressed = Input.GetKeyDown(pickUpKey);
 
