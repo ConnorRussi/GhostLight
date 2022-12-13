@@ -52,10 +52,10 @@ public class Movment : MonoBehaviour
         yInput = Input.GetAxis("Vertical");
         Vector3 mousePosition = Input.mousePosition;
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        Vector2 direction = new Vector2(mousePosition.x - transform.position.x, mousePosition.y - transform.position.y);
-        transform.up = direction;
-        Vector3 airmDir = (mousePosition - gameObject.transform.position).normalized;
-        fovSC.SetAimDirection(mousePosition);
+        //utilsClass.GetMousWorldPosition(); is the function he calls in the video
+        Vector3 aimDir = (mousePosition - gameObject.transform.position).normalized;
+        //target pos - object.gegtposition
+        fovSC.SetAimDirection(aimDir);
         fovSC.SetOrgin(transform.position);
         placeKeyPressed = Input.GetKeyDown(trapPlaceKey);
         pickUpKeyPressed = Input.GetKeyDown(pickUpKey);
